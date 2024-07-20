@@ -1,16 +1,56 @@
-import { Image, StyleSheet, Platform, View, Text } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { Button } from "@/components/Button";
+import React, { useEffect } from "react";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
 
 import { firestore } from "../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import { useEffect } from "react";
 
-export default function HomeScreen() {
+const reservations = [
+  {
+    id: "1",
+    name: "John Doe",
+    time: "6:00 PM",
+    partySize: 4,
+    contact: "john@example.com",
+    specialRequests: "Window seat",
+    table: 70,
+  },
+  {
+    id: "2",
+    name: "Jane Smith",
+    time: "7:00 PM",
+    partySize: 2,
+    contact: "jane@example.com",
+    specialRequests: "",
+    table: 92,
+  },
+  // Add more reservations as needed
+];
+
+const ReservationCard = ({ reservation }) => (
+  <View style={styles.card}>
+    <Text style={styles.name}>{reservation.name}</Text>
+    <Text style={styles.details}>Time: {reservation.time}</Text>
+    <Text style={styles.details}>Party Size: {reservation.partySize}</Text>
+    <Text style={styles.details}>Table: {reservation.table}</Text>
+    {reservation.contact ? (
+      <Text style={styles.details}>Contact: {reservation.contact}</Text>
+    ) : null}
+    {reservation.specialRequests ? (
+      <Text style={styles.details}>
+        Requests: {reservation.specialRequests}
+      </Text>
+    ) : null}
+  </View>
+);
+
+const ReservationsScreen = () => {
   useEffect(() => {
     const getFirestoreData = async () => {
       const querySnapshot = await getDocs(
@@ -25,49 +65,81 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <ParallaxScrollView
-        headerBackgroundColor={{
-          light: "#A1CEDC",
-          dark: "#1D3D47",
-        }}
-        headerImage={
-          <Image
-            source={require("@/assets/images/logo.png")}
-            style={styles.reactLogo}
-          />
-        }
-      >
-        <View style={styles.contentWrapper}>
-          <Text>Hello</Text>
-        </View>
-      </ParallaxScrollView>
-      <View style={styles.buttonWrapper}>
-        <Button title="Add" onPress={() => console.log("Add")} />
-        <Button title="Remove" onPress={() => console.log("Remove")} />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.date}>July 20, 2024</Text>
+        <Text style={styles.title}>Today's Reservations</Text>
       </View>
-    </View>
+      <FlatList
+        data={reservations}
+        renderItem={({ item }) => <ReservationCard reservation={item} />}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+      />
+      <View style={styles.footer}>
+        <Button
+          title="Add Reservation"
+          onPress={() => console.log("Add Reservation")}
+        />
+        <Button
+          title="View All Reservations"
+          onPress={() => console.log("View All Reservations")}
+        />
+      </View>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f8f8f8",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-    resizeMode: "contain",
+  header: {
+    padding: 20,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
-  contentWrapper: {},
-  buttonWrapper: {
+  date: {
+    fontSize: 16,
+    color: "#888",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginVertical: 10,
+  },
+  list: {
+    padding: 10,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  details: {
+    fontSize: 14,
+    color: "#555",
+  },
+  footer: {
+    padding: 20,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
     flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 32,
-    paddingBottom: 12,
-    backgroundColor: "white",
+    justifyContent: "space-around",
   },
 });
+
+export default ReservationsScreen;
