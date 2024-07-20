@@ -8,6 +8,8 @@ import {
   SafeAreaView,
 } from "react-native";
 
+import { Link } from "expo-router";
+
 import { firestore } from "../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -77,10 +79,12 @@ const ReservationsScreen = () => {
         contentContainerStyle={styles.list}
       />
       <View style={styles.footer}>
-        <Button
-          title="Add Reservation"
-          onPress={() => console.log("Add Reservation")}
-        />
+        <Link href="/add-reservation" asChild>
+          <Button
+            title="Add Reservation"
+            onPress={() => console.log("Add Reservation")}
+          />
+        </Link>
         <Button
           title="View All Reservations"
           onPress={() => console.log("View All Reservations")}
